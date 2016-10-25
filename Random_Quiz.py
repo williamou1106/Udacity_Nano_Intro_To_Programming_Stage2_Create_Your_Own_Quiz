@@ -5,17 +5,12 @@ Easy_Quizzes = ["Gala, Jonagold and Pink Lady are varieties of __________.",
 Blank = "__________"
 
 
-Easy_Answers =[["Apple"], ["Venezuela"], ["20"], ["Alec Guiness", "Ewan McGregor"]]
+Easy_Answers =[["APPLE"], ["VENEZUELA"], ["20"], ["ALEC GUINESS", "EWAN MCGREGOR"]]
 
-def Answer_Match(user_input, mode, question_count):
+def Answer_Match(mode, question_count, blank):
 	if mode == "E":
-		if user_input == Easy_Answers[question_count]:
-			print "Correct!"
-			return Easy_Answers[question_count][0]
-		else:
-			print "Incorrect."
-			return Easy_Answers[question_count][0]
-
+		return Easy_Answers[question_count][blank]
+	
 def Number_Of_Blanks(splitted_string):
 	count = 0
 	for pos in splitted_string:
@@ -23,35 +18,35 @@ def Number_Of_Blanks(splitted_string):
 			count += 1
 			return count
 
+def Prompt_User(blank, answer):
+	user_input = raw_input("Please fill in blank " + (str)(blank) + ": ")
+	while user_input != answer:
+		user_input = raw_input("Please try again. Fill in blank " + (str)(blank) + ": ")
 
-def Select_Quiz(mode):
-	if mode == "E":
-		print "\n\n\n\nWelcome to Easy Mode! Please answer the following ten questions."
-		question_count = 0
+
+def Select_Quiz(mode,Quiz):
+	question_count = 0
 		
-		for question in Easy_Quizzes: 
-			print "QUESTION " + (str)(question_count) + " : "
-			print question
+	for question in Quiz: 
+		print "QUESTION " + (str)(question_count) + " : "
+		print question
 
-
-
-			splitted_string = question.split()	
-			new_string = []
-			for word in splitted_string:
-				if Blank not in word:
-					new_string.append(word)
-				else: 
-					user_input = raw_input("Please fill the blank: ")
-					answer = Answer_Match(user_input, mode, question_count)
-					word = word.replace(Blank, answer)
-					new_string.append(word)
-			new_string = " ".join(new_string)
-			print new_string
+		splitted_string = question.split()	
+		new_string = []
+		blank = 0
+		for word in splitted_string:
+			if Blank not in word:
+				new_string.append(word)
+			else: 
+				answer = Answer_Match(mode, question_count, blank)
+				Prompt_User(blank, answer)
+				word = word.replace(Blank, answer)
+				new_string.append(word)
+				blank += 1
+		new_string = " ".join(new_string)
+		print new_string + "\n"
 			
-			question_count += 1
-
-
-
+		question_count += 1
 
 def Random_Quiz():
 	print "Welcome to random quiz! Please select a difficulty"
@@ -60,6 +55,9 @@ def Random_Quiz():
 	print "Enter H for Hard Mode"
 
 	mode = raw_input("Mode: ")
+	if mode == "E":
+		print "\n\n\n\nWelcome to Easy Mode! Please answer the following ten questions."
+		print "Please write all your answers in upper case"
+		Select_Quiz(mode, Easy_Quizzes)
 
-	Select_Quiz(mode)
 Random_Quiz()
