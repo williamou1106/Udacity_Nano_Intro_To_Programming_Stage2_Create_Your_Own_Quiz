@@ -52,15 +52,17 @@ def Answer_Match(mode, question_index, answer_index):
 
 
 
-#prompts the user to answer the current blank repeatedly until correct, or until penalties run out. "Blank_index" is to name and print the blank numerically for the current question.
-#"answer" is used match the answer to the user input. "penalty" keeps track of errors user make.
+#prompts the user to answer the current blank repeatedly until correct, or until penalties reaches the fail condition run out. "Blank_index" is to name and print the blank 
+#numerically for the current question."answer" is used match the answer to the user input. "penalty" keeps track of errors user make.
 def Prompt_User(blank_index, answer, penalty):
-	user_input = raw_input("\nPlease fill in blank " + (str)(blank_index) + ": ")
+	user_input = (raw_input("\nPlease fill in blank " + (str)(blank_index) + ": ")).upper()
+	fail_condition = 0
+	deduction_per_error = 1
 	while user_input != answer:
 		user_input = raw_input("Please try again. Fill in blank " + (str)(blank_index) + ": ")
-		penalty = (int)(penalty) - 1
-		if penalty <= 0: 
-			sys.exit("\nYou've used up all your penality. The quiz has shut down.")
+		penalty = (int)(penalty) - deduction_per_error
+		if penalty <= fail_condition: 
+			sys.exit("\nYou've used up all your penalty. The quiz has shut down.")
 	print "\nCorrect!"
 	return penalty
 
@@ -81,24 +83,29 @@ def Select_Quiz(mode, quiz, penalty):
 		#Print the question number on the screen
 		print "\nQUESTION " + (str)(question_index) + " : "
 		print question
-        #Split the question into parts in list for the purpose of locating the blanks.
-		splitted_string = question.split()	
+        #Split the question into words in list for the purpose of locating the blanks.
+		splitted_string = question.split()
+		#Create a new list for the purpose of storing  the words, after blanks are replaced with answers.	
 		new_string = []
-		#Create a blank index to keep track of blanks in the current question
+		#Create a blank index to keep track of blanks in the current question.
 		blank_index = 0
-		#Go through each parts in the list to find blanks
+		#Go through each words in the list to find blanks
 		for word in splitted_string:
+	        #Append the current word to the list if it's not a blank.
 			if Blank not in word:
 				new_string.append(word)
 			else:
-				# When Blanks are located, use the "Answer_Match" to find the answer for the blank 
-				# then prompts the user using the "Prompt_User" to ask user to test user. If user
-				# gets the correct answerm, "Display_Answers" will print the question with the answer
-				# on screen.
+				#Pass in the game mode, the index of the current questions to "Answer Match" 
+                #and the index of the current blank(eg. blank 0, blank 1). Returns answer to current question.
 				answer = Answer_Match(mode, question_index, blank_index)
+				#Pass in the index of current blank, answer, penalty. Returns a new penalty that may gave deducted.
 				penalty = (int)(Prompt_User(blank_index, answer, penalty))
+				#Replace the blank with the correct answer.
 				new_string.append(answer)
+				#Takes no input. Pass in the new list, the current question, and answer to display the question with
+				#the answer for the blank.
 				Display_Answers(new_string, question, answer)
+				#Move to the new blank, if there are more than one blanks.
 				blank_index += 1
 		# Goes to the next question
 		question_index += 1
@@ -114,17 +121,14 @@ def Random_Quiz():
 	penalty = raw_input("Penalty: ")
 	if mode == "E" and penalty.isdigit():
 		print "\n\n\n\nWELCOME TO EASY MODE! PLEASE ANSWER THE FOLLOWING 10 QUESTIONS."
-		print "***Please write all your answers in upper case"
 		print "***For questions with multiple answer. If required, please answer in alphabetical order. Or you won't get the right answer.\n"
 		Select_Quiz(mode, Easy_Quizzes, penalty)
 	elif mode == "M" and penalty.isdigit():
 		print "\n\n\n\nWELCOME TO MEDIUM MODE! PLEASE ANSWER THE FOLLOWING 10 QUESTIONS."
-		print "***Please write all your answers in upper case"
 		print "***For questions with multiple answer. If required, please answer in alphabetical order. Or you won't get the right answer.\n"
 		Select_Quiz(mode, Medium_Quizzes, penalty)
 	elif mode == "H" and penalty.isdigit():
 		print "\n\n\n\nWELCOME TO HARD MODE! PLEASE ANSWER THE FOLLOWING 10 QUESTIONS."
-		print "***Please write all your answers in upper case"
 		print "***For questions with multiple answer. If required, please answer in alphabetical order. Or you won't get the right answer.\n"
 		Select_Quiz(mode, Hard_Quizzes, penalty)
 	else: 
